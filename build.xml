@@ -1,0 +1,73 @@
+<project name="shaj" default="code">
+
+    <property name="shaj.version" value="0.5"/>
+
+    <target name="clean">
+        <delete dir="build"/>
+    </target>
+    <target name="code">
+        <mkdir dir="build/classes"/>
+        <javac destdir="build/classes"
+               target="1.1" source="1.2"
+               debug="true"
+               >
+            <src path="src/java"/>
+            <classpath>
+                <fileset dir="lib" includes="*.jar"/>
+            </classpath>
+        </javac>
+
+        <mkdir dir="build/test"/>
+        <javac destdir="build/test"
+               debug="true"
+               >
+            <src path="src/test"/>
+            <classpath>
+                <fileset dir="lib" includes="*.jar"/>
+                <pathelement location="build/classes"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="javadoc">
+        <mkdir dir="build/javadoc"/>
+        <javadoc
+            destdir="build/javadoc"
+            windowtitle="Shaj API"
+            >
+            <fileset dir="src/java"/>
+            <classpath>
+                <fileset dir="lib" includes="*.jar"/>
+            </classpath>
+            <doctitle><![CDATA[<h1>Shaj</h1>]]></doctitle>
+            <bottom><![CDATA[<i>Copyright &#169; 2005 <a href="http://www.cenqua.com/">Cenqua</a>. All Rights Reserved.</i>]]>
+            </bottom>
+        </javadoc>
+    </target>
+
+    <target name="dist" depends="code, javadoc">
+        <jar jarfile="build/shaj-${shaj.version}.jar">
+            <fileset dir="build/classes"/>
+        </jar>
+
+        <copy file="README.TXT" tofile="build/README.TXT">
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <zip zipfile="build/shaj-${shaj.version}.zip">
+            <fileset dir="build" includes="shaj-${shaj.version}.jar"/>
+            <fileset dir="build" includes="README.TXT"/>
+            <fileset dir="." includes="LICENSE.TXT"/>
+            <zipfileset prefix="native" dir="native" filemode="755"/>
+            <zipfileset prefix="doc/api" dir="build/javadoc"/>
+        </zip>
+        <zip zipfile="build/shaj-${shaj.version}-src.zip">
+            <fileset dir="build" includes="README.TXT"/>
+            <fileset dir="." includes="LICENSE.TXT"/>
+            <zipfileset prefix="src/java" dir="src/java"/>
+            <zipfileset prefix="src/c" dir="src/c"/>
+        </zip>
+    </target>
+
+</project>
